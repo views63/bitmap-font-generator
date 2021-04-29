@@ -83,8 +83,8 @@ class CharDef:
         padding = fnt_config.info["padding"]
         self.param["width"], self.param["height"] = size[0] + padding[1] + padding[3], size[1] + padding[0] + padding[2]
         self.param["xadvance"] = size[0]
-        self.param["xoffset"] = - padding[1]
-        self.param["yoffset"] = - padding[0]
+        self.param["xoffset"] = -padding[1]
+        self.param["yoffset"] = -padding[0]
 
     def set_texture_position(self, position):
         self.param["x"], self.param["y"] = position
@@ -132,8 +132,8 @@ class TextureMerger:
     def get_images(self):
         files = os.listdir('.')
         for filename in files:
-            name, ext = filename.split('.')
-            if ext.lower() == 'png':
+            if filename.lower().endswith('.png'):
+                name = filename[:-4]
                 if len(name) == 1:
                     new_char = CharDef(ord(name), filename)
                     self.charset.add_new_char(new_char)
@@ -207,7 +207,9 @@ class FntGenerator:
         fnt_file_name = self.fnt_name + '.fnt'
         try:
             with open(fnt_file_name, 'w', encoding='utf8') as fnt:
-                fnt.write(str(fnt_config))
+                tmp = str(fnt_config)
+                tmp = re.sub(r', ',r',',tmp)
+                fnt.write(tmp)
                 fnt.write(self.textureMerger.pages_to_str())
                 fnt.write(str(self.textureMerger.charset))
             fnt.close()
